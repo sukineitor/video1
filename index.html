@@ -6,39 +6,42 @@
     <title>NardVid Player</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="shortcut icon" href="logo.png" type="image/png">
-
 </head>
 <body>
-    <script type='text/javascript' src='//filthygracefulspinach.com/57/22/75/572275bb3ef2461dfb9a7394091c8925.js'></script>
     <header>
-        <a href="https://nardvid.netlify.app" target="_blank" class="logo">NardVid</a>
+        <img src="logo.png" alt="NardVid Logo" class="logo">
     </header>
     <main>
         <div class="video-container">
-            <div id="player"></div>
+            <div id="player-wrapper">
+                <div id="player"></div>
+            </div>
             <div class="controls">
                 <button id="playPauseBtn" class="control-btn">
                     <i class="fas fa-play"></i>
                 </button>
+                
                 <input type="range" id="progressBar" class="progress" min="0" max="100" value="0">
+                <span id="timeDisplay" class="time-display">0:00 / 0:00</span>
+                
                 <div class="volume-control">
-                    <i id="volumeIcon" class="fas fa-volume-up"></i>
+                    <button id="muteBtn" class="control-btn">
+                        <i id="volumeIcon" class="fas fa-volume-up"></i>
+                    </button>
                     <input type="range" id="volumeBar" class="volume" min="0" max="100" value="100">
                 </div>
+
                 <select id="qualitySelect" class="quality-select">
-                    <option value="small">Baja</option>
-                    <option value="medium" selected>Media</option>
-                    <option value="large">Alta</option>
+                    <option value="small">360p</option>
+                    <option value="medium" selected>480p</option>
+                    <option value="large">720p</option>
                     <option value="hd720">HD</option>
                 </select>
-                <button id="randomVideoBtn" class="control-btn">
-                    <i class="fas fa-random"></i>
-                </button>
             </div>
         </div>
     </main>
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="script.js"></script>
 </body>

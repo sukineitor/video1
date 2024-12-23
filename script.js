@@ -1,23 +1,22 @@
-const videoIds = [
-    'gs8qfL9PNac',
-    'dQw4w9WgXcQ',
-    'jNQXAC9IVRw',
-    'kJQP7kiw5Fk',
-    'JGwWNGJdvx8'
-];
-
 let player;
 let progressBarInterval;
+
+// Single video configuration
+const videoConfig = {
+    videoId: 'gs8qfL9PNac', // Updated video ID
+};
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '360',
         width: '640',
-        videoId: 'gs8qfL9PNac',
+        videoId: videoConfig.videoId,
         playerVars: {
             'playsinline': 1,
             'controls': 0,
-            'rel': 0
+            'rel': 0,
+            'modestbranding': 1,
+            'enablejsapi': 1
         },
         events: {
             'onReady': onPlayerReady,
@@ -27,31 +26,70 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
-    const playPauseBtn = document.getElementById("playPauseBtn");
-    const muteBtn = document.getElementById("muteBtn");
-    const progressBar = document.getElementById("progressBar");
-    const volumeBar = document.getElementById("volumeBar");
-    const qualitySelect = document.getElementById("qualitySelect");
-    const randomVideoBtn = document.getElementById("randomVideoBtn");
-
-    playPauseBtn.addEventListener("click", togglePlayPause);
-    muteBtn.addEventListener("click", toggleMute);
-    progressBar.addEventListener("input", seekTo);
-    volumeBar.addEventListener("input", setVolume);
-    qualitySelect.addEventListener("change", setQuality);
-    randomVideoBtn.addEventListener("click", playRandomVideo);
-
+    setupEventListeners();
     updateProgressBar();
     updateVolumeIcon();
 }
 
-function onPlayerStateChange(event) {
-    const playPauseBtn = document.getElementById("playPauseBtn");
-    if (event.data == YT.PlayerState.PLAYING) {
-        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-    } else if (event.data == YT.PlayerState.PAUSED) {
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+function setupEventListeners() {
+    document.getElementById("playPauseBtn").addEventListener("click", togglePlayPause);
+    document.getElementById("muteBtn").addEventListener("click", toggleMute);
+    document.getElementById("progressBar").addEventListener("input", seekTo);
+    document.getElementById("volumeBar").addEventListener("input", setVolume);
+    document.getElementById("qualitySelect").addEventListener("change", setQuality);
+
+    // Add keyboard controls
+    document.addEventListener("keydown", handleKeyPress);
+}
+
+function handleKeyPress(event) {
+    switch(event.code) {
+        case "Space":
+            event.preventDefault();
+            togglePlayPause();
+            break;
+        case "ArrowLeft":
+            event.preventDefault();
+            seekRelative(-5);
+            break;
+        case "ArrowRight":
+            event.preventDefault();
+            seekRelative(5);
+            break;
+        case "ArrowUp":
+            event.preventDefault();
+            adjustVolume(5);
+            break;
+        case "ArrowDown":
+            event.preventDefault();
+            adjustVolume(-5);
+            break;
     }
+}
+
+function seekRelative(seconds) {
+    const currentTime = player.getCurrentTime();
+    player.seekTo(currentTime + seconds, true);
+}
+
+function adjustVolume(amount) {
+    const volumeBar = document.getElementById("volumeBar");
+    const newVolume = Math.max(0, Math.min(100, parseInt(volumeBar.value) + amount));
+    volumeBar.value = newVolume;
+    setVolume();
+}
+
+function onPlayerStateChange(event) {
+    updatePlayPauseButton(event.data);
+    updateTimeDisplay();
+}
+
+function updatePlayPauseButton(playerState) {
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const icon = playerState == YT.PlayerState.PLAYING ? 
+        '<i class="fas fa-pause"></i>' : 
+        '<i class="fas fa-play"></i>';
+    playPauseBtn.innerHTML = icon;
 }
 
 function togglePlayPause() {
@@ -83,35 +121,51 @@ function setVolume() {
     updateVolumeIcon();
 }
 
+function updateVolumeIcon() {
+    const volumeIcon = document.getElementById("volumeIcon");
+    const volume = player.getVolume();
+    let iconClass = "fas fa-volume-up";
+    
+    if (player.isMuted() || volume === 0) {
+        iconClass = "fas fa-volume-mute";
+    } else if (volume < 50) {
+        iconClass = "fas fa-volume-down";
+    }
+    
+    volumeIcon.className = iconClass;
+}
+
 function setQuality() {
     const qualitySelect = document.getElementById("qualitySelect");
     player.setPlaybackQuality(qualitySelect.value);
 }
 
 function updateProgressBar() {
-    const progressBar = document.getElementById("progressBar");
+    clearInterval(progressBarInterval);
     progressBarInterval = setInterval(() => {
         if (player && player.getCurrentTime && player.getDuration) {
             const progress = (player.getCurrentTime() / player.getDuration()) * 100;
-            progressBar.value = progress;
+            document.getElementById("progressBar").value = progress;
+            updateTimeDisplay();
         }
     }, 1000);
 }
 
-function updateVolumeIcon() {
-    const volumeIcon = document.getElementById("volumeIcon");
-    const volume = player.getVolume();
-    if (volume === 0 || player.isMuted()) {
-        volumeIcon.className = "fas fa-volume-mute";
-    } else if (volume < 50) {
-        volumeIcon.className = "fas fa-volume-down";
-    } else {
-        volumeIcon.className = "fas fa-volume-up";
-    }
+function updateTimeDisplay() {
+    const timeDisplay = document.getElementById("timeDisplay");
+    const currentTime = formatTime(player.getCurrentTime());
+    const duration = formatTime(player.getDuration());
+    timeDisplay.textContent = `${currentTime} / ${duration}`;
 }
 
-function playRandomVideo() {
-    const randomIndex = Math.floor(Math.random() * videoIds.length);
-    player.loadVideoById(videoIds[randomIndex]);
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    clearInterval(progressBarInterval);
+});
 
