@@ -10,7 +10,6 @@
     <link rel="shortcut icon" href="logo.png" type="image/png">
 </head>
 <body>
-    <script type='text/javascript' src='//filthygracefulspinach.com/57/22/75/572275bb3ef2461dfb9a7394091c8925.js'></script>
     <header>
         <a href="https://nardvid.netlify.app" target="_blank">
         <img src="logo.png" alt="NardVid Logo" class="logo"></a>
@@ -21,26 +20,27 @@
                 <div id="player"></div>
             </div>
             <div class="controls">
-                <button id="playPauseBtn" class="control-btn">
-                    <i class="fas fa-play"></i>
-                </button>
-                
-                <input type="range" id="progressBar" class="progress" min="0" max="100" value="0">
-                <span id="timeDisplay" class="time-display">0:00 / 0:00</span>
-                
-                <div class="volume-control">
-                    <button id="muteBtn" class="control-btn">
-                        <i id="volumeIcon" class="fas fa-volume-up"></i>
+                <div class="control-group">
+                    <button id="playPauseBtn" class="control-btn">
+                        <i class="fas fa-play"></i>
                     </button>
-                    <input type="range" id="volumeBar" class="volume" min="0" max="100" value="100">
+                    <span id="timeDisplay" class="time-display">0:00 / 0:00</span>
                 </div>
-
-                <select id="qualitySelect" class="quality-select">
-                    <option value="small">360p</option>
-                    <option value="medium" selected>480p</option>
-                    <option value="large">720p</option>
-                    <option value="hd720">HD</option>
-                </select>
+                <input type="range" id="progressBar" class="progress" min="0" max="100" value="0">
+                <div class="control-group">
+                    <div class="volume-control">
+                        <button id="muteBtn" class="control-btn">
+                            <i id="volumeIcon" class="fas fa-volume-up"></i>
+                        </button>
+                        <input type="range" id="volumeBar" class="volume" min="0" max="100" value="100">
+                    </div>
+                    <select id="qualitySelect" class="quality-select">
+                        <option value="small">360p</option>
+                        <option value="medium" selected>480p</option>
+                        <option value="large">720p</option>
+                        <option value="hd720">HD</option>
+                    </select>
+                </div>
             </div>
         </div>
     </main>

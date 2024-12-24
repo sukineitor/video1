@@ -3,7 +3,7 @@ let progressBarInterval;
 
 // Single video configuration
 const videoConfig = {
-    videoId: 'gs8qfL9PNac', // Updated video ID
+    videoId: 'gs8qfL9PNac', // Video ID
 };
 
 function onYouTubeIframeAPIReady() {
