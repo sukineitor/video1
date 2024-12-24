@@ -37,6 +37,7 @@ function setupEventListeners() {
     document.getElementById("progressBar").addEventListener("input", seekTo);
     document.getElementById("volumeBar").addEventListener("input", setVolume);
     document.getElementById("qualitySelect").addEventListener("change", setQuality);
+    document.getElementById("fullscreenBtn").addEventListener("click", toggleFullscreen);
 
     // Add keyboard controls
     document.addEventListener("keydown", handleKeyPress);
@@ -63,6 +64,10 @@ function handleKeyPress(event) {
         case "ArrowDown":
             event.preventDefault();
             adjustVolume(-5);
+            break;
+        case "KeyF":
+            event.preventDefault();
+            toggleFullscreen();
             break;
     }
 }
@@ -164,8 +169,52 @@ function formatTime(seconds) {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
+function toggleFullscreen() {
+    const videoContainer = document.querySelector('.video-container');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    if (!document.fullscreenElement) {
+        if (videoContainer.requestFullscreen) {
+            videoContainer.requestFullscreen();
+        } else if (videoContainer.mozRequestFullScreen) { // Firefox
+            videoContainer.mozRequestFullScreen();
+        } else if (videoContainer.webkitRequestFullscreen) { // Chrome, Safari and Opera
+            videoContainer.webkitRequestFullscreen();
+        } else if (videoContainer.msRequestFullscreen) { // IE/Edge
+            videoContainer.msRequestFullscreen();
+        }
+        fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+            document.msExitFullscreen();
+        }
+        fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+}
+
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
     clearInterval(progressBarInterval);
 });
+
+// Listen for fullscreen change events
+document.addEventListener('fullscreenchange', updateFullscreenButton);
+document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+
+function updateFullscreenButton() {
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    if (document.fullscreenElement) {
+        fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+        fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+}
 
